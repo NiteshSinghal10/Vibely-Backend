@@ -8,6 +8,8 @@ import router from '../../router';
 const app = express();
 
 export const appLoader = () => {
+	app.set('trust proxy', true);
+
 	app.use(express.json());
 
 	app.use(
