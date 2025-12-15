@@ -1,6 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import { getErrorMessage, RESPONSE_MESSAGES, sendResponse, validateToken } from '../../lib';
-import { ITokenPayload } from '../../interfaces';
+import { Request, Response, NextFunction } from "express";
+import {
+  getErrorMessage,
+  RESPONSE_MESSAGES,
+  sendResponse,
+  validateToken,
+} from "../../lib";
+import { ITokenPayload } from "../../interfaces";
 
 export const verifyToken = async (
   req: Request,

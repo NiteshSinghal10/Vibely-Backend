@@ -1,2 +1,2 @@
-export * from './location';
-export * from './friend-request';
+export * from "./location";
+export * from "./friend-request";

@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const callOtherService = async <T>(
   url: string,
-  method: 'GET' | 'PUT' | 'POST' | 'DELETE',
+  method: "GET" | "PUT" | "POST" | "DELETE",
   data?: object,
   params?: object,
   options?: object,
@@ -25,7 +25,7 @@ export const callOtherService = async <T>(
     } else if (error.request) {
       // request was made but no response
       throw {
-        message: 'No response received from server',
+        message: "No response received from server",
         details: error.request,
       };
     } else {

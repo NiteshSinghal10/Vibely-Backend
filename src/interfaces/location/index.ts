@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
 
-
 export interface IUserAdditionalInfo {
   _id: Types.ObjectId;
   _user: Types.ObjectId;
@@ -13,5 +12,5 @@ export interface IUserAdditionalInfo {
   currency?: string;
   latitude?: number;
   longitude?: number;
-  interests?: string[]
+  interests?: string[];
 }

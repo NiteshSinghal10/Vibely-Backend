@@ -1,1 +1,1 @@
-export const friendRequestStatuses = ['PENDING', 'ACCEPTED', 'REJECTED'];
+export const friendRequestStatuses = ["PENDING", "ACCEPTED", "REJECTED"];
