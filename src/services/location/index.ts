@@ -5,3 +5,9 @@ export const updateUserLocation = (search: {}, update: {}, options: {} = { upser
     .then(resolve)
     .catch(reject)
 )
+
+export const getUserLocation = (search: {}) => new Promise((resolve, reject) =>
+  USER_LOCATION.findOne(search)
+    .then(resolve)
+    .catch(reject)
+)
