@@ -18,7 +18,7 @@ export const validateUpdateUserLocation = (req: Request, res: Response, next: Ne
   .validate(req.body);
 
   if(error) {
-    return sendResponse(res, 400, false, getErrorMessage(error));
+    return sendResponse(res, 400, false, error.message);
   }
 
   return next();

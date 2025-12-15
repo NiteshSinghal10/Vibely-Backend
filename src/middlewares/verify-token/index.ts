@@ -12,7 +12,6 @@ export const verifyToken = async (
 
     // If token is not found then send the response with 401 status code.
     if (!token) {
-      console.log("hello")
       throw new Error(RESPONSE_MESSAGES.en.unauthorized);
     }
 

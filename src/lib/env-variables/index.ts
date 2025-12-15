@@ -7,4 +7,5 @@ export const NODE_ENV = process.env.NODE_ENV;
 export const MONGO_URI = process.env.MONGO_URI;
 export const PUBLIC_KEY = process.env.PUBLIC_KEY;
 export const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN;
+export const AUTH_BACKEND_URL = process.env.AUTH_BACKEND_URL;
  

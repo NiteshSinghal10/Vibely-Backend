@@ -3,6 +3,7 @@ import { ITokenPayload } from '../interfaces';
 export * from './internal';
 export * from './verify-token';
 export * from './user-additional-info';
+export * from './friend-request';
 
 
 // Extend Express Request interface using module augmentation
