@@ -13,13 +13,16 @@ const schema = new Schema({
     type: String
   },
   country: {
-    type: String
+    type: String,
+    required: true
   },
   countryCode: {
-    type: String
+    type: String,
+    required: true
   },
   countryCode3: {
-    type: String
+    type: String,
+    required: true
   },
   timezone: {
     type: String

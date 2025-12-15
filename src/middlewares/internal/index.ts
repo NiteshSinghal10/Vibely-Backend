@@ -7,11 +7,11 @@ export const validateUpdateUserLocation = (req: Request, res: Response, next: Ne
     _user: joi.string().hex().length(24).required(),
     city: joi.string(),
     region: joi.string(),
-    country: joi.string(),
+    country: joi.string().required(),
     latitude: joi.number(),
     longitude: joi.number(),
-    countryCode: joi.string(),
-    countryCode3: joi.string(),
+    countryCode: joi.string().required(),
+    countryCode3: joi.string().required(),
     timezone: joi.string(),
     currency: joi.string()
   })

@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { sendResponse } from '../lib';
-import { internalController } from '../controllers';
+import { internalController, userLocationController } from '../controllers';
+import { verifyToken } from '../middlewares';
 
 const router = Router();
+
+router.use('/location', verifyToken, userLocationController);
 
 router.use('/internal', internalController)
 

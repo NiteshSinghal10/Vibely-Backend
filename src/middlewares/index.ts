@@ -1,6 +1,7 @@
 import { ITokenPayload } from '../interfaces';
 
 export * from './internal';
+export * from './verify-token';
 
 
 // Extend Express Request interface using module augmentation
