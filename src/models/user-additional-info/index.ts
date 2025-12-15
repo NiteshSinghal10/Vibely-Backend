@@ -35,7 +35,10 @@ const schema = new Schema({
   },
   longitude: {
     type: Number
+  },
+  interests: {
+    type: [String]
   }
 }, { timestamps: true });
 
-export const USER_LOCATION = model('user-location', schema);
+export const USER_ADDITIONAL_INFO = model('user-additional-info', schema);

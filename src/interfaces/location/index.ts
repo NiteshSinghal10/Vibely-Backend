@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 
-export interface IUserLocation {
+export interface IUserAdditionalInfo {
   _id: Types.ObjectId;
   _user: Types.ObjectId;
   city?: string;
@@ -13,4 +13,5 @@ export interface IUserLocation {
   currency?: string;
   latitude?: number;
   longitude?: number;
+  interests?: string[]
 }

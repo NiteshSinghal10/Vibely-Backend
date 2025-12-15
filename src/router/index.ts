@@ -5,7 +5,7 @@ import { verifyToken } from '../middlewares';
 
 const router = Router();
 
-router.use('/location', verifyToken, userLocationController);
+router.use('/user-info', verifyToken, userLocationController);
 
 router.use('/internal', internalController)
 

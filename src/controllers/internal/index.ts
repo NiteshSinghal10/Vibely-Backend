@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { getErrorMessage, RESPONSE_MESSAGES, sendResponse } from '../../lib';
 import { validateUpdateUserLocation } from '../../middlewares';
-import { updateUserLocation } from '../../services';
+import { updateUserAdditionalInfo } from '../../services';
 
 const router  = Router();
 
@@ -9,7 +9,7 @@ router.put('/update-user-location', validateUpdateUserLocation, async(req: Reque
   try {
     const { _user, ...rest } = req.body;
 
-    const userLocation = await updateUserLocation({ _user }, rest, { upsert: true });
+    const userLocation = await updateUserAdditionalInfo({ _user }, rest, { upsert: true });
 
     return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, userLocation);
   } catch(error) {
