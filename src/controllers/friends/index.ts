@@ -19,12 +19,10 @@ router.get('/list', async(req: Request, res: Response) => {
     let toIds: string[] = [];
 
     if(search) {
-      const regex = new RegExp(String(search).trim(), 'i');
       users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
-        "GET",
-        {},
-        { search: { $or: [{ firstName: regex }, { lastName: regex }] } },
+        "POST",
+        { searchValue: search },
       );
 
       toIds = users.data.map(user => String(user._id));
@@ -37,9 +35,8 @@ router.get('/list', async(req: Request, res: Response) => {
 
       users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
-        "GET",
-        {},
-        { search: { _id: { $in: toIds } } },
+        "POST",
+        { search: { _id: { $in: toIds } } }
       );
     }
 

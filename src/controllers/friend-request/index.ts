@@ -87,9 +87,8 @@ router
 
       const users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
-        "GET",
-        {},
-        { search: { _ids: { $in: userIds } } },
+        "POST",
+        { search: { _ids: { $in: userIds } } }
       );
 
       friendRequests.forEach((request) => {
