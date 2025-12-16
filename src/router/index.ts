@@ -14,7 +14,7 @@ router.use("/user-info", verifyToken, userLocationController);
 
 router.use("/friend-request", verifyToken, friendRequestController);
 
-router.use('/friend', friendsController)
+router.use('/friend', verifyToken, friendsController)
 
 router.use("/internal", internalController);
 

@@ -7,8 +7,7 @@ const router = Router();
 
 router.get('/list', async(req: Request, res: Response) => {
   try {
-    // const { sub } = req.user;
-    const sub = "6920199d5f9c121d9dc53588";
+    const { sub } = req.user;
     const { page = 1, limit = 10, search = '' } = req.query;
     const options = {
       skip: (Number(page) - 1) * Number(limit),
