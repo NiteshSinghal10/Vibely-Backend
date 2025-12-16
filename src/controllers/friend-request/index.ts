@@ -69,8 +69,7 @@ router
 
   .get(validateGetFriendRequests, async (req: Request, res: Response) => {
     try {
-      // const { sub } = req.user;
-      const sub = "6920199d5f9c121d9dc53588";
+      const { sub } = req.user;
       const { page = 1, limit = 10 } = req.query;
 
       const options = {
