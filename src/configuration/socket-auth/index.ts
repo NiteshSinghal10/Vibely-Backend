@@ -1,8 +1,10 @@
 import { Socket } from 'socket.io';
-import { ITokenPayload } from '../../interfaces';
-import { validateToken } from '../../lib';
+import { parse } from "cookie";
 
-export interface AuthSocket extends Socket {
+import { ITokenPayload, ClientToServerEvents, ServerToClientEvents } from '../../interfaces';
+import { getErrorMessage, validateToken } from '../../lib';
+
+export interface AuthSocket extends Socket<ClientToServerEvents, ServerToClientEvents> {
   user?: ITokenPayload;
 }
 
@@ -11,13 +13,14 @@ export default function socketAuth(
   next: (err?: Error) => void
 ) {
   try {
-    console.log("AUTH MIDDLEWARE")
-    const token = socket.handshake.auth.token;
+    const cookies = parse(socket.handshake.headers.cookie || "");
+    const token = cookies?.accessToken || '';
+
     const user = validateToken(token) as ITokenPayload;
 
     socket.user = user;
     next();
-  } catch {
-    next(new Error("Unauthorized"));
+  } catch(error) {
+    next(new Error(getErrorMessage(error)));
   }
 }

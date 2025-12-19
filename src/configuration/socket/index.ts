@@ -1,21 +1,22 @@
 import { Server } from 'socket.io';
-import socketAuth from '../socket-auth';
+import socketAuth, { AuthSocket } from '../socket-auth';
 import http from 'http';
 import registerSockets from '../../sockets';
+import { ServerToClientEvents, ClientToServerEvents } from '../../interfaces';
 
 let io: Server;
 
 export const initSocket = (server: http.Server) => {
-  io = new Server(server, {
+  io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     cors: {
       origin: "*",
       methods: ['GET', 'POST', 'PUT', 'DELETE']
     }
   });
 
-  // io.use(socketAuth);
+  io.use(socketAuth);
 
-  io.on('connection', (socket) => {
+  io.on('connection', (socket: AuthSocket) => {
     console.log("Connected:", socket.id);
 
     registerSockets(io, socket);

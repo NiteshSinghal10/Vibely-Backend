@@ -16,6 +16,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@types/cookie": "^0.6.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/joi": "^17.2.2",
@@ -33,6 +34,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/jsonwebtoken": "^9.0.10",
     "axios": "^1.13.2",
+    "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

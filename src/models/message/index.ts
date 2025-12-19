@@ -21,7 +21,7 @@ const schema = new Schema({
   status: {
     type: String,
     enum: messageStatus,
-    default: 'PENDING'
+    default: 'SENT'
   }
 }, { timestamps: true });
 
