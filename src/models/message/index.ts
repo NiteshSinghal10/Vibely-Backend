@@ -1,9 +1,10 @@
 import { Schema, Types, model } from 'mongoose';
-import { generateChatId, messageStatus } from '../../lib';
+import { messageStatus } from '../../lib';
 
 const schema = new Schema({
-  chatId: {
-    type: String,
+  _chat: {
+    type: Types.ObjectId,
+    ref: 'friend-request',
     required: true
   },
   _sender: {
@@ -20,18 +21,8 @@ const schema = new Schema({
   status: {
     type: String,
     enum: messageStatus,
-    default: 'SENT'
+    default: 'PENDING'
   }
 }, { timestamps: true });
-
-schema.pre('save', function (next) {
-  if (!this.isNew) {
-    return next();
-  }
-
-  const chatId = generateChatId(String(this._sender), String(this._receiver));
-  this.chatId = chatId;
-  next();
-})
 
 export const MESSAGE = model('message', schema);

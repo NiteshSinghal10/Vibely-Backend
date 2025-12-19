@@ -12,10 +12,4 @@ export const validateToken = (token: string) => {
   return response;
 };
 
-export const generateChatId = (userId1: string | Types.ObjectId, userId2: string | Types.ObjectId): string => {
-  // Sort the two IDs lexicographically (Dictionary Order) to ensure order doesn't matter
-  const ids = [String(userId1), String(userId2)].sort();
-  return ids.join('_');
-}
-
 export * from "./call-other-service";
