@@ -1,10 +1,12 @@
 import express from "express";
+import http from 'http';
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { FRONTEND_DOMAIN, PORT } from "../../lib";
 import router from "../../router";
+import { initSocket } from '../../configuration';
 
 const app = express();
 
@@ -50,7 +52,10 @@ export const appLoader = () => {
 
   app.use("/vibely/api/v1", router);
 
-  app.listen(PORT, () => {
+  const server = http.createServer(app);
+  initSocket(server);
+
+  server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 };
