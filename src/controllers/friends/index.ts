@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { AUTH_BACKEND_URL, callOtherService, getErrorMessage, RESPONSE_MESSAGES, sendResponse } from '../../lib';
-import { getFriendRequests } from '../../services';
-import { IFriendRequest, IUser } from '../../interfaces';
+import { getFriendRequests, getFriends } from '../../services';
+import { IFriend, IFriendRequest, IUser } from '../../interfaces';
+import { Types } from 'mongoose';
 
 const router = Router();
 
@@ -14,43 +15,49 @@ router.get('/list', async(req: Request, res: Response) => {
       limit
     };
 
-    let users: { data: IUser[] };
-    let friends: IFriendRequest[];
-    let fromIds: string[] = [];
+    let friendUserIds: string[] = [];
 
     if(search) {
-      users = await callOtherService<{ data: IUser[] }>(
+      const users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
         "POST",
         { searchValue: search },
       );
 
-      fromIds = users.data.map(user => String(user._id));
+      const friendsIds = users.data.map(user => String(user._id));
 
-      friends = await getFriendRequests({ from: { $in: fromIds }, to: sub, status: 'ACCEPTED' }, {}, options) as IFriendRequest[];
+      const friends = await getFriends({
+        _users: { $in: sub },
+        status: 'ACTIVE',
+        $expr: {
+          $setIsSubset: [[sub], '$_users']
+        }
+      }, {}, options) as IFriend[];
+
+      friends.forEach((friend) => {
+        const friendId = friend._users.find(
+          id => String(id) !== String(sub)
+        );
+  
+        if (friendsIds.includes(String(friendId))) {
+          friendUserIds.push(String(friendId));
+        }
+      });
     } else {
-      friends = await getFriendRequests({ from: sub, status: 'ACCEPTED' }, {}, options) as IFriendRequest[];
+      const friends = await getFriends({ _users: { $in: sub }, status: 'ACTIVE' }, {},options) as IFriend[];
 
-      fromIds = friends.map(friend => String(friend.to));
-
-      users = await callOtherService<{ data: IUser[] }>(
-        `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
-        "POST",
-        { search: { _id: { $in: fromIds } } }
-      );
+      friendUserIds = friends.map(friend => friend._users.find(user => String(user) !== String(sub)))
+      .filter(user => user !== undefined)
+      .map(user => String(user));
     }
 
-    friends.forEach((friend) => {
-      const fromUser = users.data.find(
-        (user) => String(user._id) === String(friend.to),
-      );
+    const friendsData = await callOtherService<{ data: IUser[] }>(
+      `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
+      'POST',
+      { search: { _id: { $in: friendUserIds } } }
+    );
 
-      if (fromUser) {
-        friend.from = fromUser;
-      }
-    });
-
-    return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, friends)
+    return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, friendsData.data)
 
   } catch(error) {
     return sendResponse(res, 400, false, getErrorMessage(error));

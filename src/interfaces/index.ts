@@ -5,3 +5,4 @@ export * from "./friend-request";
 export * from "./user";
 export * from './message';
 export * from './sockets';
+export * from './friend';

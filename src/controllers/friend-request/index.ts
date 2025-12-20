@@ -11,7 +11,9 @@ import {
   validateUpdateStatusFriendRequest,
 } from "../../middlewares";
 import {
+  createFriend,
   createFriendRequest,
+  getFriend,
   getFriendRequests,
   updateFriendRequest,
 } from "../../services";
@@ -26,6 +28,12 @@ router
     try {
       const { sub } = req.user;
       const { to } = req.body;
+
+      const isFriendExists = await getFriend({ _users: { $in: [sub, to] } });
+
+      if(isFriendExists) {
+        throw new Error(RESPONSE_MESSAGES.en.both_are_friends)
+      }
 
       const friendRequest = await createFriendRequest({ from: sub, to });
 
@@ -52,7 +60,13 @@ router
           { _id, from: sub, status: "PENDING" },
           { status },
           { new: true },
-        );
+        ) as IFriendRequest;
+
+        if(status === 'ACCEPTED') {
+          await createFriend({
+            _users: [sub, updatedFriendRequest.to]
+          })
+        }
 
         return sendResponse(
           res,
@@ -78,12 +92,12 @@ router
       };
 
       const friendRequests = (await getFriendRequests(
-        { from: sub, status: { $ne: "PENDING" } },
+        { to: sub, status: "PENDING" },
         {},
         options,
       )) as IFriendRequest[];
 
-      const userIds = friendRequests.map((request) => request.to);
+      const userIds = friendRequests.map((request) => request.from);
 
       const users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
@@ -97,7 +111,7 @@ router
         );
 
         if (toUser) {
-          request.to = toUser;
+          request.from = toUser;
         }
       });
 
