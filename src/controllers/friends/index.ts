@@ -16,7 +16,7 @@ router.get('/list', async(req: Request, res: Response) => {
 
     let users: { data: IUser[] };
     let friends: IFriendRequest[];
-    let toIds: string[] = [];
+    let fromIds: string[] = [];
 
     if(search) {
       users = await callOtherService<{ data: IUser[] }>(
@@ -25,28 +25,28 @@ router.get('/list', async(req: Request, res: Response) => {
         { searchValue: search },
       );
 
-      toIds = users.data.map(user => String(user._id));
+      fromIds = users.data.map(user => String(user._id));
 
-      friends = await getFriendRequests({ from: sub, to: { $in: toIds }, status: 'ACCEPTED' }, {}, options) as IFriendRequest[];
+      friends = await getFriendRequests({ from: { $in: fromIds }, to: sub, status: 'ACCEPTED' }, {}, options) as IFriendRequest[];
     } else {
       friends = await getFriendRequests({ from: sub, status: 'ACCEPTED' }, {}, options) as IFriendRequest[];
 
-      toIds = friends.map(friend => String(friend.to));
+      fromIds = friends.map(friend => String(friend.to));
 
       users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
         "POST",
-        { search: { _id: { $in: toIds } } }
+        { search: { _id: { $in: fromIds } } }
       );
     }
 
     friends.forEach((friend) => {
-      const toUser = users.data.find(
+      const fromUser = users.data.find(
         (user) => String(user._id) === String(friend.to),
       );
 
-      if (toUser) {
-        friend.to = toUser;
+      if (fromUser) {
+        friend.from = fromUser;
       }
     });
 

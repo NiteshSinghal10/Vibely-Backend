@@ -3,7 +3,7 @@ import { IUser } from "../user";
 
 export interface IFriendRequest {
   _id: Types.ObjectId;
-  from: Types.ObjectId;
+  from: Types.ObjectId | IUser;
   to: Types.ObjectId | IUser;
   status: "PENDING" | "ACCEPTED" | "REJECTED";
 }

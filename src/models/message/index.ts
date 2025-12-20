@@ -2,9 +2,8 @@ import { Schema, Types, model } from 'mongoose';
 import { messageStatus } from '../../lib';
 
 const schema = new Schema({
-  _chat: {
-    type: Types.ObjectId,
-    ref: 'friend-request',
+  chatId: {
+    type: String,
     required: true
   },
   _sender: {

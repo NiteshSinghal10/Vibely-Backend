@@ -2,24 +2,27 @@ import { Server } from "socket.io";
 import { createMessage } from "../../services";
 import { IMessage } from "../../interfaces";
 import { AuthSocket } from "../../configuration";
+import { generateChatId } from "../../lib";
 
 export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
   socket.on("sendMessage", async (data) => {
-    const { _chat, _receiver, content } = data;
-    console.log("-==>", socket.user)
+    const { chatId, _receiver, content } = data;
 
     const message = await createMessage({
-      _chat,
+      chatId,
       _receiver,
       content,
-      _sender: 'a'
+      _sender: socket.user?.sub
     }) as IMessage;
 
     socket.emit("sentMessage", {
-      _receiver,
-      _chat,
-      _message: message._id
+      _id: message._id,
+      chatId: generateChatId(message._receiver, message._sender),
+      _sender: message._sender,
+      _receiver: message._receiver,
+      content: message.content,
+      createdAt: message.createdAt
     })
   });
 }

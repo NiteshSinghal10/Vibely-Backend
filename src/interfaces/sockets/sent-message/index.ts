@@ -1,6 +1,9 @@
 export interface ISentMessageData {
+  _id: string;
+  chatId: string;
+  _sender: string;
   _receiver: string;
-  _chat: string;
-  _message: string;
+  content: string;
+  createdAt: Date | string;
 }
 
