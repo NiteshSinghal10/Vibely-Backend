@@ -17,7 +17,7 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
       _sender: socket.user?.sub
     }) as IMessage;
 
-    const redis = getRedisClient();
+    const redis = getRedisClient()
 
     const receiverSocketId = await redis.get(`user:${_receiver}`)
 

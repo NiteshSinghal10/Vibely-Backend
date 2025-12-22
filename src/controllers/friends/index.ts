@@ -1,14 +1,15 @@
 import { Router, Request, Response } from 'express';
 import { AUTH_BACKEND_URL, callOtherService, getErrorMessage, RESPONSE_MESSAGES, sendResponse } from '../../lib';
-import { getFriendRequests, getFriends } from '../../services';
-import { IFriend, IFriendRequest, IUser } from '../../interfaces';
-import { Types } from 'mongoose';
+import { getFriends } from '../../services';
+import { IFriend, IUser } from '../../interfaces';
+import { getRedisClient } from '../../loaders';
 
 const router = Router();
 
 router.get('/list', async(req: Request, res: Response) => {
   try {
     const { sub } = req.user;
+    const redisClient = getRedisClient();
     const { page = 1, limit = 10, search = '' } = req.query;
     const options = {
       skip: (Number(page) - 1) * Number(limit),
@@ -51,11 +52,16 @@ router.get('/list', async(req: Request, res: Response) => {
       .map(user => String(user));
     }
 
-    const friendsData = await callOtherService<{ data: IUser[] }>(
+    const friendsData = await callOtherService<{ data: (IUser & { isOnline?: boolean })[] }>(
       `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
       'POST',
       { search: { _id: { $in: friendUserIds } } }
     );
+
+
+    for await (const friend of friendsData.data) {
+      friend.isOnline = !!(await redisClient.get(`user:${friend._id}`));
+    } 
 
     return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, friendsData.data)
 

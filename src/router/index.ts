@@ -5,6 +5,7 @@ import {
   userLocationController,
   friendRequestController,
   friendsController,
+  messageController,
 } from "../controllers";
 import { verifyToken } from "../middlewares";
 
@@ -14,7 +15,9 @@ router.use("/user-info", verifyToken, userLocationController);
 
 router.use("/friend-request", verifyToken, friendRequestController);
 
-router.use('/friend', verifyToken, friendsController)
+router.use('/friend', verifyToken, friendsController);
+
+router.use('/message', verifyToken, messageController)
 
 router.use("/internal", internalController);
 
