@@ -29,7 +29,7 @@ router
       const { sub } = req.user;
       const { to } = req.body;
 
-      const isFriendExists = await getFriend({ _users: { $in: [sub, to] } });
+      const isFriendExists = await getFriend({ _users: { $in: to } });
 
       if(isFriendExists) {
         throw new Error(RESPONSE_MESSAGES.en.both_are_friends)

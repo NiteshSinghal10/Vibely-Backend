@@ -1,7 +1,8 @@
-import { appLoader, dbLoader } from "./src/loaders";
+import { appLoader, dbLoader, redisConnector } from "./src/loaders";
 
 const startServer = async () => {
   await dbLoader();
+  await redisConnector()
   appLoader();
 };
 
