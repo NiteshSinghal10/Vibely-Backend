@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { createMessage } from "../../services";
+import { createMessage, updateMessage } from "../../services";
 import { IMessage } from "../../interfaces";
 import { AuthSocket } from "../../configuration";
 import { generateChatId } from "../../lib";
@@ -36,4 +36,17 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
     socket.emit("sentMessage", socketEventPayload)
   });
+
+  socket.on("deleteMessage", async (data) => {
+    const user = socket.user?.sub
+    const message = await updateMessage({ _id: data._id, _sender: user }, { status: 'DELETED' }) as IMessage;
+
+    const redis = getRedisClient()
+
+    const receiverSocketId = await redis.get(`user:${message._receiver}`);
+
+    if(receiverSocketId) {
+      io.to(receiverSocketId).emit("messageDeleted", message);
+    }
+  })
 }
