@@ -7,10 +7,12 @@ import { ISentMessageData } from "./sent-message";
 export interface ServerToClientEvents {
   sentMessage: (data: ISentMessageData) => void;
   messageDeleted: (data: IMessage) => void;
+  messageEdited: (data: IMessage) => void;
 }
 
 // Events the CLIENT emits to SERVER
 export interface ClientToServerEvents {
   sendMessage: (data: ISendMessageData) => void;
   deleteMessage: (data: IDeleteMessage) => void;
+  editMessage: (data: IMessage) => void;
 }

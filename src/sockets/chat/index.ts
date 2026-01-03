@@ -49,4 +49,18 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
       io.to(receiverSocketId).emit("messageDeleted", message);
     }
   })
+
+  socket.on("editMessage", async (data) => {
+    const user = socket.user?.sub;
+    const { _id, ...rest } = data;
+    const message = await updateMessage({ _id, _sender: user }, rest) as IMessage;
+
+    const redis = getRedisClient();
+
+    const receiverSocketId = await redis.get(`user:${message._receiver}`);
+
+    if(receiverSocketId) {
+      io.to(receiverSocketId).emit("messageEdited", message);
+    }
+  })
 }
