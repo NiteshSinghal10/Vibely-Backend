@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { createMessage, getMessage, updateMessage } from "../../services";
+import { createMessage, getMessage, updateFriend, updateMessage } from "../../services";
 import { IMessage } from "../../interfaces";
 import { AuthSocket } from "../../configuration";
 import { generateChatId } from "../../lib";
@@ -8,14 +8,15 @@ import { getRedisClient } from "../../loaders";
 export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
   socket.on("sendMessage", async (data) => {
-    const { chatId, _receiver, content, _replyMessage } = data;
+    const { chatId, _receiver, content, _replyMessage, _friend } = data;
 
     const message = await createMessage({
       chatId,
       _receiver,
       content,
       _sender: socket.user?.sub,
-      _replyMessage
+      _replyMessage,
+      _friend
     }) as IMessage;
 
     const redis = getRedisClient()
@@ -42,7 +43,18 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
       io.to(receiverSocketId).emit("sentMessage", socketEventPayload);
     }
 
-    socket.emit("sentMessage", socketEventPayload)
+    socket.emit("sentMessage", socketEventPayload);
+
+    // Update last activity
+    await updateFriend(
+      {
+        $or: [
+          {_users: [message._receiver, socket.user?.sub] },
+          {_users: [socket.user?.sub, message._receiver] },
+        ]
+      },
+      { lastActivity: new Date() }
+    );
   });
 
   socket.on("deleteMessage", async (data) => {
@@ -58,6 +70,17 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
     }
 
     socket.emit("messageDeleted", message);
+
+     // Update last activity
+     await updateFriend(
+      {
+        $or: [
+          {_users: [message._receiver, socket.user?.sub] },
+          {_users: [socket.user?.sub, message._receiver] },
+        ]
+      },
+      { lastActivity: new Date() }
+    );
   })
 
   socket.on("editMessage", async (data) => {
@@ -74,5 +97,16 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
     }
 
     socket.emit("messageEdited", message);
+
+     // Update last activity
+     await updateFriend(
+      {
+        $or: [
+          {_users: [message._receiver, socket.user?.sub] },
+          {_users: [socket.user?.sub, message._receiver] },
+        ]
+      },
+      { lastActivity: new Date() }
+    );
   })
 }

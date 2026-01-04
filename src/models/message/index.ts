@@ -6,6 +6,11 @@ const schema = new Schema({
     type: String,
     required: true
   },
+  _friend: {
+    type: Schema.Types.ObjectId,
+    ref: 'Friend',
+    required: true
+  },
   _sender: {
     type: Types.ObjectId,
     required: true

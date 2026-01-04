@@ -3,4 +3,5 @@ export interface ISendMessageData {
   _receiver: string,
   content: string,
   _replyMessage?: string;
+  _friend: string;
 }

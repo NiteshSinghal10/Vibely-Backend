@@ -16,6 +16,9 @@ const schema = new Schema({
   },
   _reportedBy: {
     type: Types.ObjectId
+  },
+  lastActivity: {
+    type: Date
   }
 }, { timestamps: true });
 

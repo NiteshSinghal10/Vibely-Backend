@@ -16,7 +16,7 @@ router.get('/list', async(req: Request, res: Response) => {
       limit
     };
 
-    let friendUserIds: string[] = [];
+    let friendsDetail: Record<string, (IFriend & {friendDetail?: IUser, isOnline?: boolean})> = {};
 
     if(search) {
       const users = await callOtherService<{ data: IUser[] }>(
@@ -41,29 +41,36 @@ router.get('/list', async(req: Request, res: Response) => {
         );
   
         if (friendsIds.includes(String(friendId))) {
-          friendUserIds.push(String(friendId));
+          // friendUserIds.push(String(friendId));
+          friendsDetail[String(friendId)] = friend;
         }
       });
     } else {
       const friends = await getFriends({ _users: { $in: sub }, status: 'ACTIVE' }, {},options) as IFriend[];
 
-      friendUserIds = friends.map(friend => friend._users.find(user => String(user) !== String(sub)))
-      .filter(user => user !== undefined)
-      .map(user => String(user));
+      friends.forEach(friend => {
+        const friendId = friend._users.find(id => String(id) !== String(sub));
+
+        if (friendId) {
+          // friendUserIds.push(String(friendId));
+          friendsDetail[String(friendId)] = friend;
+        }
+      })
     }
 
     const friendsData = await callOtherService<{ data: (IUser & { isOnline?: boolean })[] }>(
       `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
       'POST',
-      { search: { _id: { $in: friendUserIds } } }
+      { search: { _id: { $in: Object.keys(friendsDetail) } } }
     );
 
 
     for await (const friend of friendsData.data) {
-      friend.isOnline = !!(await redisClient.get(`user:${friend._id}`));
+      friendsDetail[String(friend._id)].friendDetail = friend;
+      friendsDetail[String(friend._id)].isOnline = !!(await redisClient.get(`user:${friend._id}`));
     } 
 
-    return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, friendsData.data)
+    return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, Object.values(friendsDetail));
 
   } catch(error) {
     return sendResponse(res, 400, false, getErrorMessage(error));
