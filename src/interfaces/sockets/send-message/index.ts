@@ -1,5 +1,6 @@
 export interface ISendMessageData {
   chatId: string,
   _receiver: string,
-  content: string
+  content: string,
+  _replyMessage?: string;
 }

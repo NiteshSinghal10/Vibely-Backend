@@ -21,6 +21,10 @@ const schema = new Schema({
     type: String,
     enum: messageStatus,
     default: 'SENT'
+  },
+  _replyMessage: {
+    type: Schema.Types.ObjectId,
+    ref: 'message'
   }
 }, { timestamps: true });
 

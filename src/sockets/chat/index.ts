@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { createMessage, updateMessage } from "../../services";
+import { createMessage, getMessage, updateMessage } from "../../services";
 import { IMessage } from "../../interfaces";
 import { AuthSocket } from "../../configuration";
 import { generateChatId } from "../../lib";
@@ -8,18 +8,25 @@ import { getRedisClient } from "../../loaders";
 export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
   socket.on("sendMessage", async (data) => {
-    const { chatId, _receiver, content } = data;
+    const { chatId, _receiver, content, _replyMessage } = data;
 
     const message = await createMessage({
       chatId,
       _receiver,
       content,
-      _sender: socket.user?.sub
+      _sender: socket.user?.sub,
+      _replyMessage
     }) as IMessage;
 
     const redis = getRedisClient()
 
-    const receiverSocketId = await redis.get(`user:${_receiver}`)
+    const receiverSocketId = await redis.get(`user:${_receiver}`);
+
+    let replyMessage: IMessage | undefined;
+
+    if(_replyMessage) {
+      replyMessage = await getMessage({ _id: _replyMessage }, {}, {}) as IMessage;
+    }
 
     const socketEventPayload = {
       _id: message._id,
@@ -27,7 +34,8 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
       _sender: message._sender,
       _receiver: message._receiver,
       content: message.content,
-      createdAt: message.createdAt
+      createdAt: message.createdAt,
+      _replyMessage: replyMessage
     }
 
     if(receiverSocketId) {
@@ -48,6 +56,8 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
     if(receiverSocketId) {
       io.to(receiverSocketId).emit("messageDeleted", message);
     }
+
+    socket.emit("messageDeleted", message);
   })
 
   socket.on("editMessage", async (data) => {
@@ -62,5 +72,7 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
     if(receiverSocketId) {
       io.to(receiverSocketId).emit("messageEdited", message);
     }
+
+    socket.emit("messageEdited", message);
   })
 }

@@ -1,3 +1,4 @@
+import { IPopulate } from '../../interfaces';
 import { MESSAGE } from '../../models';
 
 export const createMessage = (data: {}) => new Promise((resolve, reject) =>
@@ -14,8 +15,21 @@ export const updateMessage = (search: {}, update: {}, options: {} = {new: true})
   .catch(reject)
 )
 
-export const getMessages = (search: {}, projection: {}, opitons: {}) => new Promise((resolve, reject) =>
-  MESSAGE.find(search, projection, opitons)
+export const getMessages = (search: {}, projection: {}, opitons: {}, populate: IPopulate[]) => new Promise((resolve, reject) => {
+  const query = MESSAGE.find(search, projection, opitons);
+
+  if (populate.length) {
+    populate.forEach((pop) => query.populate(pop));
+  }
+
+  return query.lean()
+  .exec()
+  .then(resolve)
+  .catch(reject)
+})
+
+export const getMessage = (search: {}, projection: {}, opitons: {}) => new Promise((resolve, reject) =>
+  MESSAGE.findOne(search, projection, opitons)
   .lean()
   .exec()
   .then(resolve)

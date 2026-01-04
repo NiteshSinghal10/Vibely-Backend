@@ -16,7 +16,7 @@ router.get('/list', validateMessageListing, async(req: Request, res: Response) =
       sort: { createdAt: -1 }
     }
 
-    const messages = await getMessages({ chatId: generateChatId(String(sub), String(_user)), status: { $ne: 'DELETED' } }, {}, options);
+    const messages = await getMessages({ chatId: generateChatId(String(sub), String(_user)), status: { $ne: 'DELETED' } }, {}, options, [{ path: '_replyMessage' }]);
 
     return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, messages);
   } catch(error) {
