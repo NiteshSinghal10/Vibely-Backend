@@ -15,6 +15,14 @@ export const updateMessage = (search: {}, update: {}, options: {} = {new: true})
   .catch(reject)
 )
 
+export const updateMessages = (search: {}, update: {}) => new Promise((resolve, reject) =>
+  MESSAGE.updateMany(search, update)
+  .lean()
+  .exec()
+  .then(resolve)
+  .catch(reject)
+)
+
 export const getMessages = (search: {}, projection: {}, opitons: {}, populate: IPopulate[]) => new Promise((resolve, reject) => {
   const query = MESSAGE.find(search, projection, opitons);
 
@@ -32,6 +40,12 @@ export const getMessage = (search: {}, projection: {}, opitons: {}) => new Promi
   MESSAGE.findOne(search, projection, opitons)
   .lean()
   .exec()
+  .then(resolve)
+  .catch(reject)
+)
+
+export const countMessages = (search: {}) => new Promise((resolve, reject) =>
+  MESSAGE.countDocuments(search)
   .then(resolve)
   .catch(reject)
 )

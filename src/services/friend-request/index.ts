@@ -22,3 +22,10 @@ export const updateFriendRequest = (search = {}, update = {}, options = {}) =>
       .then(resolve)
       .catch(reject),
   );
+
+export const countFriendRequests = (search = {}) =>
+  new Promise((resolve, reject) =>
+    FRIEND_REQUEST.countDocuments(search)
+      .then(resolve)
+      .catch(reject),
+  );

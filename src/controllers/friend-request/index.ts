@@ -11,6 +11,7 @@ import {
   validateUpdateStatusFriendRequest,
 } from "../../middlewares";
 import {
+  countFriendRequests,
   createFriend,
   createFriendRequest,
   getFriend,
@@ -57,14 +58,15 @@ router
         const { _id, status } = req.body;
 
         const updatedFriendRequest = await updateFriendRequest(
-          { _id, from: sub, status: "PENDING" },
+          { _id, to: sub, status: "PENDING" },
           { status },
           { new: true },
         ) as IFriendRequest;
 
         if(status === 'ACCEPTED') {
           await createFriend({
-            _users: [sub, updatedFriendRequest.to]
+            _users: [sub, updatedFriendRequest.to],
+            lastActivity: new Date()
           })
         }
 
@@ -102,7 +104,7 @@ router
       const users = await callOtherService<{ data: IUser[] }>(
         `${AUTH_BACKEND_URL}/auth/api/v1/internal/users`,
         "POST",
-        { search: { _ids: { $in: userIds } } }
+        { search: { _id: { $in: userIds } } }
       );
 
       friendRequests.forEach((request) => {
@@ -110,8 +112,16 @@ router
           (user) => String(user._id) === String(request.to),
         );
 
+        const fromUser = users.data.find(
+          (user) => String(user._id) === String(request.from),
+        );
+
         if (toUser) {
-          request.from = toUser;
+          request.to = toUser;
+        }
+
+        if (fromUser) {
+          request.from = fromUser;
         }
       });
 
@@ -126,5 +136,17 @@ router
       return sendResponse(res, 400, false, getErrorMessage(error));
     }
   });
+
+router.get('/count', async (req: Request, res: Response) => {
+  try {
+    const { sub } = req.user;
+
+    const count = await countFriendRequests({ to: sub, status: "PENDING" });
+
+    return sendResponse(res, 200, true, RESPONSE_MESSAGES.en.success, count);
+  } catch (error) {
+    return sendResponse(res, 400, false, getErrorMessage(error));
+  }
+})
 
 export const friendRequestController = router;

@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { createMessage, getMessage, updateFriend, updateMessage } from "../../services";
+import { createMessage, getMessage, updateFriend, updateMessage, updateMessages } from "../../services";
 import { IMessage } from "../../interfaces";
 import { AuthSocket } from "../../configuration";
 import { generateChatId } from "../../lib";
@@ -47,12 +47,7 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
     // Update last activity
     await updateFriend(
-      {
-        $or: [
-          {_users: [message._receiver, socket.user?.sub] },
-          {_users: [socket.user?.sub, message._receiver] },
-        ]
-      },
+      { _id: message._friend },
       { lastActivity: new Date() }
     );
   });
@@ -73,12 +68,7 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
      // Update last activity
      await updateFriend(
-      {
-        $or: [
-          {_users: [message._receiver, socket.user?.sub] },
-          {_users: [socket.user?.sub, message._receiver] },
-        ]
-      },
+      { _id: message._friend },
       { lastActivity: new Date() }
     );
   })
@@ -100,13 +90,12 @@ export const chatSocket = (io: Server, socket: AuthSocket): void => {
 
      // Update last activity
      await updateFriend(
-      {
-        $or: [
-          {_users: [message._receiver, socket.user?.sub] },
-          {_users: [socket.user?.sub, message._receiver] },
-        ]
-      },
+      { _id: message._friend },
       { lastActivity: new Date() }
     );
+  })
+
+  socket.on("messageRead", async (data) => {
+    await updateMessages({ _friend: data._friend }, { status: 'READ' });
   })
 }

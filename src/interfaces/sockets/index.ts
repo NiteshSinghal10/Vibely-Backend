@@ -15,4 +15,5 @@ export interface ClientToServerEvents {
   sendMessage: (data: ISendMessageData) => void;
   deleteMessage: (data: IDeleteMessage) => void;
   editMessage: (data: IMessage) => void;
+  messageRead: (data: { _friend: string }) => void;
 }

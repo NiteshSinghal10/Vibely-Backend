@@ -7,5 +7,6 @@ export interface IMessage {
   _receiver: string;
   content: string;
   createdAt: Date | string;
-  _replyMessage?: Schema.Types.ObjectId | IMessage
+  _replyMessage?: Schema.Types.ObjectId | IMessage;
+  _friend: string;
 }
