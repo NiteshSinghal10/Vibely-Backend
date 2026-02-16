@@ -6,7 +6,7 @@ export const redisConnector = async () => {
   if (!redisClient) {
     // Connect to production Redis
     redisClient = createClient({
-      url: "redis://localhost:6379", // Use secure host + password
+      url: "redis://localhost:6379",
     });
 
     redisClient.on("connect", () => console.log("Redis connected"));

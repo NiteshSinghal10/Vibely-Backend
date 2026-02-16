@@ -77,14 +77,8 @@ jobs:
             echo "Checking pwd:"
             pwd
 
-            echo "Removing Old Dist"
-            rm -r dist
-
             echo "Copy dist"
             cp -r /tmp/dist/* ./
-
-            echo "Going to dist"
-            cd dist
 
             echo "Moving .env file from tmp"
             mv /tmp/.env.tmp .env
