@@ -74,6 +74,9 @@ jobs:
             rm -r dist
           EOF
 
+          echo "Printing build directory:"
+          ls -la ./build/dist
+
           scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/env_content ec2-user@api.truewaysindia.com:/tmp/.env.tmp
 
           scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no ./build/dist ec2-user@api.truewaysindia.com:/tmp/dist/
