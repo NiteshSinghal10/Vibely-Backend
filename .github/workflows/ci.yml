@@ -31,6 +31,7 @@ jobs:
         with:
           name: build-artifact
           path: ./dist
+          retention-days: 1
 
   deploy:
     name: Deploy to server
