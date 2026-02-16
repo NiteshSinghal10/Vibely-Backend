@@ -57,31 +57,16 @@ jobs:
         env:
           ENV_FILE: ${{ vars.ENV_FILE }}
         run: |
-          echo "$ENV_FILE" > /tmp/env_content
+          echo "$ENV_FILE" > /tmp/.env
 
-          scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/env_content ec2-user@api.truewaysindia.com:/tmp/.env.tmp
+          scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/.env ec2-user@api.truewaysindia.com:/home/ec2-user/Desktop/vibely/backend/Vibely-Backend/
 
-          scp -r -i ~/key/mykey.pem -o StrictHostKeyChecking=no ./dist/* ec2-user@api.truewaysindia.com:/tmp/dist/
+          scp -r -i ~/key/mykey.pem -o StrictHostKeyChecking=no ./dist/* ec2-user@api.truewaysindia.com:/home/ec2-user/Desktop/vibely/backend/Vibely-Backend/
 
           ssh -i ~/key/mykey.pem -o StrictHostKeyChecking=no ec2-user@api.truewaysindia.com << 'EOF'
 
-            echo "Current directory check:"
-            pwd
-            
-            echo "Source Bash"
-            source ~/.bashrc
-
             echo "Changing directory..."
             cd Desktop/vibely/backend/Vibely-Backend
-
-            echo "Checking pwd:"
-            pwd
-
-            echo "Copy dist"
-            cp -r /tmp/dist/* ./
-
-            echo "Moving .env file from tmp"
-            mv /tmp/.env.tmp .env
 
             echo "Installing dependencies..."
             npm i
