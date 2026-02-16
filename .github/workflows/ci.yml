@@ -56,23 +56,14 @@ jobs:
         run: |
           echo "$ENV_FILE" > /tmp/env_content
 
-          ssh -i ~/key/mykey.pem -o StrictHostKeyChecking=no ec2-user@api.truewaysindia.com << 'EOF'
+          echo "Current directory:"
+          pwd
 
-            echo "Current directory check:"
-            pwd
-            
-            echo "Source Bash"
-            source ~/.bashrc
+          echo "List root:"
+          ls -la
 
-            echo "Changing directory..."
-            cd Desktop/vibely/backend/Vibely-Backend
-
-            echo "Checking pwd:"
-            pwd
-
-            echo "Removing Old Dist"
-            rm -r dist
-          EOF
+          echo "List build folder:"
+          ls -la build
 
           scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/env_content ec2-user@api.truewaysindia.com:/tmp/.env.tmp
 
@@ -92,8 +83,8 @@ jobs:
             echo "Checking pwd:"
             pwd
 
-            echo "Installing dependencies..."
-            npm i
+            echo "Removing Old Dist"
+            rm -r dist
 
             echo "Copy dist"
             cp -r /tmp/dist/* ./
@@ -103,6 +94,9 @@ jobs:
 
             echo "Moving .env file from tmp"
             mv /tmp/.env.tmp .env
+
+            echo "Installing dependencies..."
+            npm i
 
             echo "Reloading PM2..."
             npx pm2 reload vibely
