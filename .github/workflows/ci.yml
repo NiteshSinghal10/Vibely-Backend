@@ -48,7 +48,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: ./build
+          path: ./dist
 
       - name: Run deployment 
         env:
@@ -63,11 +63,11 @@ jobs:
           ls -la
 
           echo "List build folder:"
-          ls -la build
+          ls -la dist
 
           scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/env_content ec2-user@api.truewaysindia.com:/tmp/.env.tmp
 
-          scp -r -i ~/key/mykey.pem -o StrictHostKeyChecking=no ./build/dist ec2-user@api.truewaysindia.com:/tmp/dist/
+          scp -r -i ~/key/mykey.pem -o StrictHostKeyChecking=no ./dist/* ec2-user@api.truewaysindia.com:/tmp/dist/
 
           ssh -i ~/key/mykey.pem -o StrictHostKeyChecking=no ec2-user@api.truewaysindia.com << 'EOF'
 
