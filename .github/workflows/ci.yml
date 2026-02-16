@@ -23,6 +23,12 @@ jobs:
       - name: Run build
         run: npm run build
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: ./dist
+
   deploy:
     name: Deploy to server
     runs-on: ubuntu-latest
@@ -38,13 +44,17 @@ jobs:
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/key/mykey.pem
           chmod 600 ~/key/mykey.pem
 
-      - name: Run deployment over Cloudflare SSH
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+          path: ./build
+
+      - name: Run deployment 
         env:
           ENV_FILE: ${{ vars.ENV_FILE }}
         run: |
           echo "$ENV_FILE" > /tmp/env_content
-
-          scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/env_content ec2-user@api.truewaysindia.com:/tmp/.env.tmp
 
           ssh -i ~/key/mykey.pem -o StrictHostKeyChecking=no ec2-user@api.truewaysindia.com << 'EOF'
 
@@ -60,21 +70,33 @@ jobs:
             echo "Checking pwd:"
             pwd
 
-            echo "Checking out staging branch..."
-            git checkout staging
-            git pull origin staging
+            echo "Removing Old Dist"
+            rm -r dist
+          EOF
+
+          scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no /tmp/env_content ec2-user@api.truewaysindia.com:/tmp/.env.tmp
+
+          scp -i ~/key/mykey.pem -o StrictHostKeyChecking=no ./build/dist ec2-user@api.truewaysindia.com:/tmp/dist/
+
+          ssh -i ~/key/mykey.pem -o StrictHostKeyChecking=no ec2-user@api.truewaysindia.com << 'EOF'
+
+            echo "Current directory check:"
+            pwd
+            
+            echo "Source Bash"
+            source ~/.bashrc
+
+            echo "Changing directory..."
+            cd Desktop/vibely/backend/Vibely-Backend
+
+            echo "Checking pwd:"
+            pwd
 
             echo "Installing dependencies..."
             npm i
 
-            echo "Removing Old Dist"
-            rm -r dist
-
-            echo "Building project..."
-            npm run build
-
-            echo "Copy Package json"
-            cp package.json ./dist/
+            echo "Copy dist"
+            cp -r /tmp/dist/* ./
 
             echo "Going to dist"
             cd dist
