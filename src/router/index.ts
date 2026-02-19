@@ -11,18 +11,21 @@ import { verifyToken } from "../middlewares";
 
 const router = Router();
 
-router.use("/user-info", verifyToken, userLocationController);
-
-router.use("/friend-request", verifyToken, friendRequestController);
-
-router.use('/friend', verifyToken, friendsController);
-
-router.use('/message', verifyToken, messageController)
 
 router.use("/internal", internalController);
 
 router.get("/test", (req, res) => {
   return sendResponse(res, 200, true, "Success");
 });
+
+router.use(verifyToken);
+
+router.use("/user-info", userLocationController);
+
+router.use("/friend-request", friendRequestController);
+
+router.use('/friend', friendsController);
+
+router.use('/message', messageController)
 
 export default router;

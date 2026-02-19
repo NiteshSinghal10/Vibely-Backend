@@ -8,6 +8,7 @@ export interface ServerToClientEvents {
   sentMessage: (data: ISentMessageData) => void;
   messageDeleted: (data: IMessage) => void;
   messageEdited: (data: IMessage) => void;
+  randomConnected: () => void;
 }
 
 // Events the CLIENT emits to SERVER
@@ -16,4 +17,6 @@ export interface ClientToServerEvents {
   deleteMessage: (data: IDeleteMessage) => void;
   editMessage: (data: IMessage) => void;
   messageRead: (data: { _friend: string }) => void;
+  randomConnect: () => void;
+  cancelRandomConnect: () => void;
 }
